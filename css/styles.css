@@ -741,6 +741,38 @@ select:focus-visible, textarea:focus-visible {
   border-radius: 12px; background: var(--olive); color: var(--cream); font-size: 1.3rem;
 }
 
+/* ---- Testimonials / reviews ---- */
+.testimonials { background: var(--olive-2); color: var(--cream); }
+.testimonials .section__head { max-width: 800px; margin-inline: auto; text-align: center; }
+.testimonials .section__eyebrow { color: var(--sage-light); }
+.testimonials .section__title { color: var(--cream); }
+.testimonials .section__intro { color: var(--cream-dim); margin-inline: auto; }
+.testimonials__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.testimonial {
+  background: var(--cream);
+  color: var(--bark);
+  border-radius: var(--radius);
+  padding: 1.9rem 1.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+.testimonial__quote { color: var(--muted); font-size: 1rem; flex: 1; }
+.testimonial__foot { display: grid; gap: 0.3rem; }
+.testimonial__stars { color: var(--ember); letter-spacing: 3px; font-size: 1rem; }
+.testimonial__author {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.95rem;
+  color: var(--bark);
+}
+.testimonial__loc { color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 860px) {
+  .testimonials__grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; }
+}
+
 /* ---- Contact page ---- */
 .contact-page__grid {
   display: grid;
