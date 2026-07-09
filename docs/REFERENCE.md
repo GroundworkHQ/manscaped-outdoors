@@ -8,14 +8,15 @@ Landing/sales page for Manscaped Outdoors, a landscaping company serving Clarkes
 Long-term vision (future phases, NOT in current scope): basic CRM with sales pipeline tracking, AI chat bot, and an AI agent handling inbound calls and texts. This build is frontend only.
 
 ## 2. Stack & accounts
-- Static HTML/CSS/JS, no framework for now (kept simple per client scope)
-- Hosting: GitHub Pages
-- Domain: manscapedoutdoors.com (currently live with the old site — this project replaces it)
-- Reference assets/briefs: Google Drive folder "Manscaped Outdoors"
+- Static HTML/CSS/JS, no framework, no build step (kept simple per client scope)
+- Repos (GitHub org GroundworkHQ): **`manscaped-outdoors`** (private, source of truth) and **`miguelloza-forwards`** (the apex Vercel deploy — serves the preview)
+- Hosting (current): **live preview at https://miguelloza.com/manscaped-outdoors/** via the apex Vercel flow ([[apex-site-flow]]). Final hosting for `manscapedoutdoors.com` TBD at deploy time (static → GitHub Pages or Vercel).
+- Domain: manscapedoutdoors.com (currently the old site — this project replaces it)
+- Reference assets/briefs: Google Drive folder "Manscaped Outdoors" (fully downloaded to ~/Downloads this session)
 
 ## 3. Architecture
 Multi-page static site, no backend, no build step, no framework. Plain HTML/CSS/JS served from the repo root for GitHub Pages. Structure mirrors the old live site (Home / Services / About / Contact).
-- `index.html` — Home: hero (boomerang video), services preview (→ services.html), portfolio grid + lightbox, service area, CTA band (→ contact.html)
+- `index.html` — Home: hero (static image), services preview (→ services.html), portfolio grid + lightbox, two before/after sliders (on a sage band), service area, CTA band (→ contact.html)
 - `services.html` — 4 services as alternating image/text detail rows (Landscape Design, Hardscape, Seasonal Installations, Rock Features) + CTA
 - `about.html` — Jared's story, pull quote, values, service area + CTA
 - `contact.html` — "Let's bring your vision to life" + estimate form (First/Last/Email/Phone/Project type/Message) + details + FB + same-day-response note
@@ -29,43 +30,28 @@ Multi-page static site, no backend, no build step, no framework. Plain HTML/CSS/
 - `.page-banner` (with inline `background-image` per page) is the top section on every subpage; its padding clears the fixed header.
 
 ## 4. What's built
-- **Full multi-page site (Home / Services / About / Contact), verified in-browser** — hero video w/ seamless loop, alternating service rows, Jared's About story, contact form, lightbox, responsive, active nav, zero console errors. Content for Services/About/Contact was pulled from the old live site (manscapedoutdoors.com/services, /about-us..., /contact-us) and rewritten. Founder is **Jared** (grew up local, works alongside the crew). Extended service area: Clarkesville, **Lake Burton, Toccoa**, Habersham County.
-- **Landing page** (earlier scaffold, now the Home page).
-- Logo pulled from live site, saved at `assets/manscaped-outdoors-logo.png` (500x500 PNG — highest-res available on the current site; raster, not vector — ask Keith for the original AI/SVG if one exists). Used as brand mark + favicon.
-- 9 portfolio photos at `assets/portfolio/` (IMG_5564–5573.JPG, 960x540–2048x1152) — wired into the portfolio grid + lightbox.
-- **Hero video processed + wired in** (see item 5 for the full decision trail): `assets/hero/hero-eydmdd9.mp4` (1080p web, 5.2MB), `hero-eydmdd9-loop.mp4` (boomerang forward+reverse for a seamless loop, 9.8MB — this is the one the page uses), `hero-eydmdd9-poster.jpg` (poster still). Made with ffmpeg.
+- **Full multi-page site (Home / Services / About / Contact), built + verified + deployed.** Content for Services/About/Contact pulled from the old live site (manscapedoutdoors.com/services, /about-us..., /contact-us) and rewritten. Founder is **Jared** (grew up local, works alongside the crew). Extended service area: Clarkesville, **Lake Burton, Toccoa**, Habersham County.
+- **Hero: STATIC wide aerial still** (`assets/hero/hero-still.jpg`). We tried a rotating drone video loop (dizzy) and a fire-only cinemagraph (loop artifacts) — both rejected; **static was the final call.** The video files (`hero-eydmdd9.mp4`, `-loop.mp4`, `-cinemagraph.mp4`, `-poster.jpg`) remain in `assets/hero/` but are **unused** by the page.
+- **Before / After sliders** — two on the Home page (after portfolio, on a soft-sage separation band): (1) Shirley project, barren slope → boulder walls & fire-pit patio; (2) Container-Home, raw grade → stone steps & retaining wall. clip-path wipe driven by a keyboard-accessible range input; each slider's Before/After tag hides at the extreme so only the visible photo's label shows. Images in `assets/before-after/` (`ba-*` = slider 1, `ba2-*` = slider 2), 3:4 portrait.
+- **Client reviews** — 3 testimonials on About (Carolyn Wilkes / Chuck Furstenau / Darren Hoeffner), from the old site.
+- **Services page photos** — real per-service images in `assets/services/` (landscape-design, hardscape, rock-features, seasonal-installations), pulled from the old site (fixed an earlier mismatch where cabin/deck photos were used).
+- **About founder photo** — `assets/jared.jpg` (pulled from the old site, optimized) in the Meet Jared section.
+- Logo `assets/manscaped-outdoors-logo.png` (500x500 raster — ask Keith for a vector). 9 portfolio photos `assets/portfolio/` in the grid + lightbox.
+- **Deployed (live preview):** https://miguelloza.com/manscaped-outdoors/ — served via the apex Vercel flow (see [[apex-site-flow]]). Source of truth: private repo `GroundworkHQ/manscaped-outdoors`. Deploy copy: `GroundworkHQ/miguelloza-forwards` (subfolder `manscaped-outdoors/`, git auto-deploys to Vercel).
 
 ## 5. What's next
-- **Contact form has no backend yet** — currently a `mailto:` fallback (opens the user's mail client). Future: wire to Resend (Miguel's stack) or Formspree by setting a real form action and removing the mailto handler in `js/main.js` (marked with a NOTE comment there and in index.html).
-- Pull more/better portfolio photos as needed — the current 9 are cabin/deck/vista shots (great for "outdoor living" feel but light on pure hardscape/stonework close-ups). The Drive folder ("Manscaped Outdoors") has much more:
-  - `Shirley_Project_Photos` → "*1.Best" (10 photos) and "*2.Best" (9 photos) — very large files (5–11MB each), compress before web use
-  - `Premium-Portfolio` → Landscape, Stonework, Premium, Artificial+Turf, Boulder.Wall, Carpentry/Outdoor+Construction subfolders — only "Premium" surveyed so far (6 files, 3.8–7MB each)
-  - `Container-Home_Carpentry+Total-Landscape` → "Before+After" subfolder not yet pulled (only "Best-After-Shots" done)
-  - `B-Miller_Hardscape+Design` → only a "Videos" subfolder, not yet explored
-- Consider a secondary "our craft" section using a work-in-action clip (reserve candidates: 9BRD3DA paver build, UKG8EMP retaining wall — see item on hero decision).
-- Deploy to GitHub Pages, point manscapedoutdoors.com DNS at it.
-- All large source photos (5-11MB) will need resizing/compression before use — raw camera-resolution files are too heavy for web.
-- **Hero video decision (FINAL):** `EYDMDD9` — "Aerial top-down drone over fire pit in stone-path garden" by BlackBoxGuild (elements.envato.com/aerial-top-down-drone-rotate-above-fire-pit-table--EYDMDD9), 4K UHD horizontal. Chosen after pivoting the hero concept from terrain-matching (rejected the Zenistock "riding lawn mower" European-estate series — didn't match NE Georgia / NC Appalachian-foothills terrain) to a "work in action / finished outdoor-living" beauty shot that sells the craft directly.
-  - **Downloaded + processed + wired in.** 4K master (68MB, 3840x2160, 11.3s, no audio) downloaded via Miguel's Envato account. ffmpeg outputs in `assets/hero/`: `hero-eydmdd9.mp4` (1080p, CRF 24, muted, +faststart, 5.2MB), `hero-eydmdd9-loop.mp4` (boomerang, seamless, 9.8MB — **used by the page**), `hero-eydmdd9-poster.jpg` (frame @ 5s, 324KB). 4K master left in Miguel's ~/Downloads, not committed (too heavy for the Pages repo). To regenerate the loop: `ffmpeg -i hero-eydmdd9.mp4 -filter_complex "[0]split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1[out]" -map "[out]" -c:v libx264 -pix_fmt yuv420p -crf 24 -movflags +faststart -an hero-eydmdd9-loop.mp4`.
-
-## 5. What's next
-- Pull more portfolio photos as needed — the Drive folder ("Manscaped Outdoors") has much more available beyond the initial batch grabbed:
-  - `Shirley_Project_Photos` → "*1.Best" (10 photos) and "*2.Best" (9 photos) — NOTE: these are very large files (5–11MB each), will need compression before web use
-  - `Premium-Portfolio` → Landscape, Stonework, Premium, Artificial+Turf, Boulder.Wall, Carpentry/Outdoor+Construction subfolders — only "Premium" subfolder has been surveyed so far (6 files, also large 3.8–7MB each)
-  - `Container-Home_Carpentry+Total-Landscape` → "Before+After" subfolder not yet pulled (only "Best-After-Shots" done)
-  - `B-Miller_Hardscape+Design` → only has a "Videos" subfolder, not yet explored
-- Build landing page sections (services, service area, contact/estimate request, portfolio/photos)
-- Deploy to GitHub Pages, point manscapedoutdoors.com DNS at it
-- All large source photos (5-11MB) will need resizing/compression before use on the actual site regardless of source — raw camera-resolution files are too heavy for web
-- **Hero video decision (FINAL):** `EYDMDD9` — "Aerial top-down drone over fire pit in stone-path garden" by BlackBoxGuild (elements.envato.com/aerial-top-down-drone-rotate-above-fire-pit-table--EYDMDD9), 4K UHD horizontal. Chosen after pivoting the hero concept from terrain-matching (rejected the Zenistock "riding lawn mower" European-estate series — didn't match NE Georgia / NC Appalachian-foothills terrain) to a "work in action / finished outdoor-living" beauty shot that sells the craft directly. Reserve/secondary "our craft" candidates if needed: 9BRD3DA (paver pathway build), UKG8EMP (block retaining wall build), S8CQXAE (backyard patio).
-  - **Downloaded + processed.** 4K master (68MB, 3840x2160, 11.3s, no audio) downloaded via Miguel's Envato account. Web version created with ffmpeg: `assets/hero/hero-eydmdd9.mp4` (1080p, CRF 24, muted, +faststart, 5.2MB) plus poster still `assets/hero/hero-eydmdd9-poster.jpg` (frame @ 5s, 324KB). 4K master left in Miguel's ~/Downloads, not committed (too heavy for the Pages repo).
-  - Still needs: wire into the hero `<video>` (autoplay + muted + loop + playsinline, poster=hero-eydmdd9-poster.jpg, brand-tinted overlay for text legibility) when the landing page is scaffolded.
+- **Contact form has no backend** — `mailto:` fallback (opens the user's mail client). Wire to Resend (Miguel's stack) or Formspree: set a real form action and remove the mailto handler in `js/main.js` (NOTE comments mark the spot in `js/main.js` + `contact.html`).
+- **Broader photo curation (now unblocked).** The **entire Drive is downloaded**: `~/Downloads/Manscaped Outdoors-...-2-001.zip` (~1.3GB, includes 13 videos + 179 images). Browser downloads from Drive don't work in-session — this was a manual bulk-download. Re-extract images from that zip (skip videos) to curate. To do: swap the remaining portfolio/service/About imagery for best-of-library, and fix the last home-page duplicate (the service-area image `IMG_5567` is reused from the portfolio grid). Notable folders: `Shirley_Project_Photos` (before/after + `_1.Best`/`_2.Best` curated), `Container-Home.../Before+After` (curated + `PHOTO_SELECTION_NOTES.txt`), `Premium-Portfolio` (Landscape/Stonework/Boulder.Wall/etc.).
+- **Deploy to the real domain** `manscapedoutdoors.com` when the client approves (currently only on the miguelloza.com preview). NOTE: the site is fully static and could go on GitHub Pages OR the Vercel apex flow — decide at deploy time.
+- Optional: more before/after sliders (Drive has more matched pairs).
 
 ## 6. Conventions
-- Plain static site, no build step — edit `index.html` / `css/styles.css` / `js/main.js` directly. To preview: `python3 -m http.server 8765` from the repo root, open `http://127.0.0.1:8765`.
-- Brand colors and type live as CSS custom properties in `:root` at the top of `styles.css` — change them there, not scattered through the file. Ember orange (`--ember`) is the CTA/accent, pulled from the hero fire; everything else is the earthy logo palette (bark/olive/sage/cream/trunk).
-- Video assets: ship a compressed web version, never the raw 4K master. Hero background uses the boomerang `-loop.mp4` so it repeats seamlessly.
-- Section reveals use `data-reveal` added by JS + an IntersectionObserver; if you add a section and want it to animate in, no attribute needed in HTML — just add its selector to the `revealTargets` query in `main.js`.
+- Plain static site, no build step — edit `index.html` / `css/styles.css` / `js/main.js` directly. Preview: `python3 -m http.server 8765` from the repo root → `http://127.0.0.1:8765`.
+- Brand colors + type are CSS custom properties in `:root` at the top of `styles.css`. Ember orange (`--ember`) is the CTA/accent; the rest is the earthy logo palette (bark/olive/sage/cream/trunk).
+- **Hero is a static `<img>`** (`hero-still.jpg`), not a video. Don't re-introduce the drone video loop — it was rejected as dizzy (rotating + zooming footage loops badly). The unused video files can be deleted if you want to slim the repo.
+- Section reveals: `data-reveal` is added by JS + an IntersectionObserver — to animate a new section, just add its selector to the `revealTargets` query in `main.js` (no HTML attribute needed).
+- Before/after slider: markup is a `.ba` figure with `data-ba`; JS loops all `[data-ba]`, so adding another slider needs no JS changes. The wipe is `clip-path` on `.ba__before` driven by `--pos` (a range input). Two-up via `.ba-grid`.
+- **Deployment (two-repo sync).** Edit the **source** repo (`manscaped-outdoors`), commit + push. Then sync the web files (`index.html`, `css/`, `js/`, changed `assets/`) into `miguelloza-forwards/manscaped-outdoors/`, **re-add `<base href="/manscaped-outdoors/" />` after `<head>` in the copied `index.html`** (source has no base tag), commit + push → Vercel auto-deploys. Full flow in [[apex-site-flow]].
 
 ## 7. Open decisions
 - Final branding direction — current site's logo ("tree of life in a circle") and photography may carry over, but overall design needs a full refresh since current site is considered outdated
