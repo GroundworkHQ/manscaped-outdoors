@@ -47,14 +47,28 @@
     });
   }
 
-  /* ---------- Hero video: respect reduced motion ---------- */
+  /* ---------- Hero video: slow it down + respect reduced motion ----------
+     The clip is a rotating aerial orbit; at full speed the rotation (and the
+     boomerang direction change) is dizzying. Playing it slower reads as calm,
+     ambient motion. Tune HERO_SPEED (0.5 = half speed) to taste. */
+  var HERO_SPEED = 0.8;
   var heroVideo = document.querySelector("[data-hero-video]");
-  if (heroVideo && prefersReducedMotion) {
-    // Show the poster frame only; don't autoplay motion.
-    try {
-      heroVideo.removeAttribute("autoplay");
-      heroVideo.pause();
-    } catch (e) {}
+  if (heroVideo) {
+    if (prefersReducedMotion) {
+      // Show the poster frame only; don't autoplay motion.
+      try {
+        heroVideo.removeAttribute("autoplay");
+        heroVideo.pause();
+      } catch (e) {}
+    } else {
+      var applyHeroSpeed = function () {
+        try { heroVideo.playbackRate = HERO_SPEED; } catch (e) {}
+      };
+      applyHeroSpeed();
+      // playbackRate can reset if the element re-loads; reassert on key events.
+      heroVideo.addEventListener("loadedmetadata", applyHeroSpeed);
+      heroVideo.addEventListener("play", applyHeroSpeed);
+    }
   }
 
   /* ---------- Reveal on scroll ---------- */
