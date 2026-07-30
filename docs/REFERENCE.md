@@ -63,9 +63,26 @@ Multi-page static site, no backend, no build step, no framework. Plain HTML/CSS/
   - 1st priority (Team Member) is still empty/unassigned — confirmed harmless (skipped instantly, not the source of the delay), left as-is.
   - **Client update sent to Keith (2026-07-29).** Explainer email summarizing the root cause + fix + the open fallback-number question was sent to kcannone@gmail.com; copy kept at `docs/clients/keith/call-transfer-fix-email-draft.md`.
 - **SUPERSEDED — forwarding changed back to `469-841-6524` on purpose (2026-07-30).** ⚠️ **Read this before "fixing" the forwarding number.** Per Miguel: **`(469) 841-6524` is Jared's WORK PHONE and it still works** — the 2026-07-29 entry above characterised it as "dead/retired", which was wrong (it was retired from the *website's published contact info* on 2026-07-24, but the line itself is live). Conversely **`706-491-6911` is Jared's PERSONAL number and he does not want calls going there**, despite it being what Business Profile → Business Phone has on file. So the External Phone Number (2nd priority) was changed from `706-491-6911` back to **`+1 469 841 6524`**, verified after a fresh page reload (Manage Numbers row now reads Forwarding Number `+1 469-841-6524`, Call Timeout 25 s). Nothing else in the cascade was touched.
-  - **Still open — the 3rd priority is Jared's personal number.** Business Phone Number (3rd priority) is still `+17064916911`. If the work phone goes unanswered for the timeout, calls fall through to Jared's personal line anyway, which is the thing he asked to avoid. Changing it means editing Business Profile → Business Phone; **not done, needs Miguel's call.**
-  - **Timeout is now worth revisiting.** It was raised 15s → 25s on 2026-07-29 *specifically because* 2nd and 3rd priority were the same number, so extra ring time was free. They are now genuinely different destinations, so 25s means a caller waits the full 25 seconds on the work phone before anything else happens. **15-20s is probably the better setting now** — not changed, flagged to Miguel.
-  - **Not yet test-called.** The 2026-07-29 fix was confirmed with a real test call; this change has not been. Worth one call to `(706) 903-9564` to confirm the work phone rings promptly.
+  - Superseded again the same day by the Tony-first routing below — see the next entry for the current live cascade.
+- **CURRENT LIVE CALL ROUTING (2026-07-30, verified after fresh page reloads).** Sales rings first, then Jared's work phone, then voicemail. **Jared's personal number is no longer anywhere in the routing.**
+
+  | Priority | Destination | Who |
+  |---|---|---|
+  | 1st — Team Member | *(empty, skipped instantly)* | — |
+  | 2nd — External Phone Number | **+1 (828) 347-1890** | **Tony**, the sales guy |
+  | 3rd — Business Phone Number | **+1 (469) 841-6524** | **Jared**, work phone |
+  | Backup | Voicemail | — |
+  | Call Timeout | **15s** (was 25s) | — |
+
+  The GHL number itself is `+1 706-903-9564`, friendly name now **"Website Number"** (renamed from "Jared's number").
+  - **People → numbers, so nobody re-swaps these by mistake:** `828-347-1890` = Tony (sales). `469-841-6524` = Jared's work phone (live; only retired from the website's *published* contact info on 2026-07-24). `706-491-6911` = **Jared's PERSONAL number — deliberately removed, do not put it back.** `706-903-9564` = the GHL/Twilio number the website and ads publish.
+  - The 3rd priority is not editable on the phone-number screen; it mirrors **Business Profile → Business Phone**, which was changed from the personal number to the work number to get it out of the routing while keeping a valid business phone of record (a blank one risks the A2P 10DLC resubmission).
+  - Timeout went back to 15s because 2nd and 3rd are now genuinely different destinations — the 25s from 2026-07-29 was only justified when both slots held the same number.
+  - **Call Connect is still ON** (Advanced Settings), so callers hear a short "connecting your call" announcement before bridging. Expected, and the only remaining source of a small delay if Jared complains again — it's a single checkbox.
+  - **Still not test-called.** The 2026-07-29 fix was confirmed with a live test call; this configuration has not been.
+  - **Possible future need:** this sends *every* inbound call to sales first, including existing customers calling about active jobs. If that becomes a complaint, the fix is an IVR ("press 1 for a new project, 2 for an existing job"), configurable on the same Call Forwarding screen.
+
+- **⚠️ GOTCHA — the GHL settings UI is hostile to automation.** Two things cost a lot of time on 2026-07-30 and will again: (1) the Edit Configuration **modal auto-dismisses** if the row's ⋯ menu click and the "Edit Configuration" click land in *separate* tool calls — they must be in one batch, then wait ~10s for it to finish loading (the Friendly Name field is blank until it's ready; saving early risks wiping it). (2) **Business Profile's Save button is unreachable** — that page renders in a cross-origin iframe (`client-app-crm-settings.leadconnectorhq.com`), the outer document doesn't scroll, wheel/keyboard scroll doesn't reach the frame, and loading the frame URL standalone returns a blank page. **Miguel has to click Save on that page manually.** Also: Chrome autofill fires on the Business Profile address fields and will offer to overwrite the client's street address with Miguel's saved personal addresses — don't Tab through that form.
 
 ## 5. What's next
 - **Hosting handoff to the client (started 2026-07-29/30, staging live 2026-07-30).** Jared wants to own and self-host the site rather than it living long-term on Miguel's personal miguelloza.com/Vercel preview. Jared already has his own hosting stack for the *current* live WordPress site:
