@@ -35,3 +35,27 @@
   RewriteCond %{DOCUMENT_ROOT}/$1.html -f
   RewriteRule ^([^/.]+)/?$ /$1.html [R=301,L]
 </IfModule>
+
+# --- Cache policy ------------------------------------------------------------
+# Added 2026-07-31. The host was serving .html with max-age=15552000 (180 days)
+# and css/js with max-age=31536000 (1 year). That meant returning visitors kept
+# seeing an old copy of the site long after it was updated — the reviews section
+# and the thank-you modal both shipped and were invisible to anyone who had
+# visited before.
+#
+# The rule: HTML must always be revalidated, assets may be cached hard because
+# their URLs are versioned (css/styles.css?v=YYYYMMDD). When you change CSS or
+# JS, BUMP THE ?v= IN ALL FIVE HTML PAGES or returning visitors keep the stale
+# file.
+<IfModule mod_headers.c>
+  # HTML: never trust a cached copy without checking with the server first
+  <FilesMatch "\.(html|htm)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    Header unset Expires
+  </FilesMatch>
+
+  # Versioned assets + images: safe to cache hard
+  <FilesMatch "\.(css|js|jpg|jpeg|png|gif|webp|svg|ico|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+</IfModule>
