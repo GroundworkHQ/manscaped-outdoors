@@ -125,6 +125,18 @@ Plus a generic fallback: any single-segment extensionless path with a matching `
 - ⚠️ **The `.htaccess` carries a loud comment warning against reintroducing the WordPress `RewriteRule . /index.php [L]` block.** That rule is what would break the static site, since `index.php` no longer exists. The commented-out example inside the warning is inert.
 - **Lesson for future cutovers:** check `site:<domain>` in Google *before* removing a CMS, and redirect the indexed URLs as part of the cutover rather than after it.
 
+### 4d. FIXED — returning visitors were being served a months-old site (2026-07-31)
+**The most consequential bug of the launch, caught by accident.** The host was serving `.html` with `max-age=15552000` (180 days) and `css`/`js` with `max-age=31536000` (1 year). Anyone who had visited before kept getting their cached copy, so **the reviews section, the thank-you modal and the photo swap were all invisible to returning visitors**. Observed live: the page loaded new HTML against a stale stylesheet and the trust badges rendered as unstyled inline text. Flushing SiteGround's cache does nothing for this — it lives in the visitor's browser.
+
+**Fix, three parts (all required):**
+1. **`.htaccess` header rules** — `.html` gets `no-cache, must-revalidate`; css/js/images keep `max-age=31536000`.
+2. **Versioned asset URLs** — all five pages reference `css/styles.css?v=20260731` and `js/main.js?v=20260731`. This is what makes the long asset cache safe.
+3. **⚠️ NGINX Direct Delivery had to be turned OFF** for `manscapedoutdoors.com` (Site Tools → Speed → Caching → NGINX Direct Delivery). **Without this, parts 1 and 2 do nothing.** NGINX serves existing static files directly and never consults Apache, so `.htaccess` `mod_headers` rules were silently ignored. SiteGround's own info box says as much: *"if you need to use custom caching .htaccess rules for your static content you may need to switch it off."* The redirects in §4c kept working throughout because those target paths that don't exist as files, so they fall through to Apache. Staging subdomains still have NGINX DD on — only production was changed. **Reverting is one toggle**, but the caching bug comes back with it.
+
+- **🔁 WHENEVER YOU CHANGE CSS OR JS: bump the `?v=` in all five HTML pages.** Otherwise returning visitors keep the old file for a year. This is now the single easiest way to ship an invisible change.
+- Verified after: all 5 pages + css + js byte-identical to source, headers correct (`HTML no-cache`, `CSS/IMG max-age=31536000`), all six redirects still 301, and the homepage loaded from a plain uncached URL renders the trust badges styled.
+- Performance note: turning off NGINX DD means Apache serves the static files. On a 5-page static site the difference is negligible; correctness was worth far more than the milliseconds.
+
 ## 5. What's next
 - **Hosting handoff to the client (started 2026-07-29/30, staging live 2026-07-30).** Jared wants to own and self-host the site rather than it living long-term on Miguel's personal miguelloza.com/Vercel preview. Jared already has his own hosting stack for the *current* live WordPress site:
   - **SiteGround** — hosting for manscapedoutdoors.com (WordPress + email, `mail.manscapedoutdoors.com` IMAP/SMTP), login at siteground.com, account email `jaredmurray2569@gmail.com`.
