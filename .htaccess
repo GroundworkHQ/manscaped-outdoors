@@ -1,0 +1,37 @@
+# Manscaped Outdoors - static site
+#
+# Added 2026-07-30, after the WordPress -> static cutover. Google still has the
+# old WordPress URLs indexed and they were all returning 404. These 301s point
+# them at the new static pages so search traffic and existing links survive.
+#
+# WARNING: do NOT reintroduce the old WordPress rewrite block
+#   RewriteCond %{REQUEST_FILENAME} !-f
+#   RewriteCond %{REQUEST_FILENAME} !-d
+#   RewriteRule . /index.php [L]
+# index.php no longer exists. That rule would route every request to a missing
+# file and break the whole site even though every page is present.
+#
+# HTTPS is enforced at the server level via SiteGround Site Tools, not here.
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- Old WordPress pages -> new static equivalents -------------------------
+  # /privacy-policy/ matters beyond SEO: it is the URL Jared supplies to Meta
+  # for the required privacy-policy field on his contact-form ads.
+  RewriteRule ^privacy-policy/?$                               /privacy-policy.html [R=301,L]
+  RewriteRule ^services/?$                                     /services.html       [R=301,L]
+  RewriteRule ^contact-us/?$                                   /contact.html        [R=301,L]
+  RewriteRule ^request-an-estimate/?$                          /contact.html        [R=301,L]
+  RewriteRule ^about-us-the-heart-behind-manscaped-outdoors/?$ /about.html          [R=301,L]
+  RewriteRule ^about-us/?$                                     /about.html          [R=301,L]
+
+  # --- Generic fallback ------------------------------------------------------
+  # Any other single-segment, extensionless path that has a matching .html file
+  # redirects to it (e.g. /about -> /about.html). Only fires when the requested
+  # path is not already a real file or directory.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^([^/.]+)/?$ /$1.html [R=301,L]
+</IfModule>
