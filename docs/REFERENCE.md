@@ -84,6 +84,25 @@ Multi-page static site, no backend, no build step, no framework. Plain HTML/CSS/
 
 - **⚠️ GOTCHA — the GHL settings UI is hostile to automation.** Two things cost a lot of time on 2026-07-30 and will again: (1) the Edit Configuration **modal auto-dismisses** if the row's ⋯ menu click and the "Edit Configuration" click land in *separate* tool calls — they must be in one batch, then wait ~10s for it to finish loading (the Friendly Name field is blank until it's ready; saving early risks wiping it). (2) **Business Profile's Save button is unreachable** — that page renders in a cross-origin iframe (`client-app-crm-settings.leadconnectorhq.com`), the outer document doesn't scroll, wheel/keyboard scroll doesn't reach the frame, and loading the frame URL standalone returns a blank page. **Miguel has to click Save on that page manually.** Also: Chrome autofill fires on the Business Profile address fields and will offer to overwrite the client's street address with Miguel's saved personal addresses — don't Tab through that form.
 
+## 4b. LIVE — production cutover completed 2026-07-30
+
+**`manscapedoutdoors.com` now serves the new static site.** WordPress is gone from `public_html`. Verified live: all 5 pages return 200, the root is byte-identical to the source `index.html` (18,448 bytes), CSS/JS/images serve with correct content types, `http://` redirects to `https://`, `www` resolves, `wp-login.php` returns 404, and the thank-you modal is present on the contact page.
+
+**Order of operations used (deliberate — the destructive step went last):**
+1. **Backup first.** Site Tools → Security → Backups → manual backup named **`Pre-cutover WordPress 2026-07-30`** (created 05:18 PM). Verified three ways, not just by the success toast: it appears in the list after a page reload, the manual-slot count dropped 5→4, and its ⋯ menu offers **Restore All Files and Databases** plus Files / Databases / Emails / Download. Daily system backups also exist back to 07/28.
+2. **Copied the build in BEFORE deleting anything.** Selected all 8 items in `new.manscapedoutdoors.com/public_html` → Copy → navigated to `manscapedoutdoors.com/public_html` → Paste. WordPress kept serving throughout (its `.htaccess` still routed to `index.php`), so there was no downtime window and nothing was destroyed until the new files were confirmed in place.
+3. **Deleted WordPress in three verified batches** (7 items, then 2, then 14), checking the selection count and highlighted rows each time so no keeper was ever selected.
+4. Flushed production Dynamic Cache.
+
+**What was deliberately KEPT:** `.well-known/` — it holds `acme-challenge/` (SSL cert validation) and `autoconfig/` (email client autodiscovery; their mail runs on this host at `mail.manscapedoutdoors.com`). Deleting it would not have broken the website, it would have broken cert renewal and email autoconfig. Confirmed still present after cutover (`/.well-known/acme-challenge/` returns 403 = exists, listing denied; a 404 would mean it was gone).
+
+**What was deleted:** `wp-admin/`, `wp-content/`, `wp-includes/`, all root `wp-*.php`, `xmlrpc.php`, `index.php`, `license.txt`, `readme.html`, `php_errorlog`, `Default.html` (SiteGround's unused "Under construction" placeholder), and **`.htaccess`**.
+
+- **⚠️ Deleting `.htaccess` was REQUIRED, not optional.** It contained `RewriteRule . /index.php [L]`, which routes every request to `index.php`. Left in place with WordPress gone, the static site would have appeared broken even though every file was correct. Its full contents were WordPress + SiteGround boilerplate only (`SGS XMLRPC Disable Service`, the WP rewrite block, `SGO Unset Vary`) — **no custom redirects, no 301s, no domain verification, no email routing**, so nothing bespoke was lost. The static site needs no `.htaccess`; HTTPS is enforced at server level via Site Tools, which survives the cutover (verified: `http://` → `https://` still works).
+- **Not present in the old root, so nothing else to rescue:** no `robots.txt`, no `sitemap.xml`, no Google/Facebook verification files, no `ads.txt`.
+- **Known side effect, accepted:** old `/wp-content/uploads/...` media URLs now 404. Anything linking to them (old Facebook posts, past emails, ads) will break. The files remain in the backup.
+- **Retired:** the miguelloza.com preview copy (`miguelloza-forwards` repo) is no longer needed as the client-facing link and can be cleaned up.
+
 ## 5. What's next
 - **Hosting handoff to the client (started 2026-07-29/30, staging live 2026-07-30).** Jared wants to own and self-host the site rather than it living long-term on Miguel's personal miguelloza.com/Vercel preview. Jared already has his own hosting stack for the *current* live WordPress site:
   - **SiteGround** — hosting for manscapedoutdoors.com (WordPress + email, `mail.manscapedoutdoors.com` IMAP/SMTP), login at siteground.com, account email `jaredmurray2569@gmail.com`.
