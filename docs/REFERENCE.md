@@ -103,6 +103,28 @@ Multi-page static site, no backend, no build step, no framework. Plain HTML/CSS/
 - **Known side effect, accepted:** old `/wp-content/uploads/...` media URLs now 404. Anything linking to them (old Facebook posts, past emails, ads) will break. The files remain in the backup.
 - **Retired:** the miguelloza.com preview copy (`miguelloza-forwards` repo) is no longer needed as the client-facing link and can be cleaned up.
 
+### 4c. FIXED — old WordPress URLs were 404ing after the cutover (2026-07-30)
+**Caught only after launch, while pulling the Google reviews.** Every URL Google has indexed for the old WordPress site was returning 404, so organic search traffic was landing on dead pages. A `site:manscapedoutdoors.com` search showed exactly five indexed URLs: `/`, `/services/`, `/contact-us/`, `/request-an-estimate/`, and `/about-us-the-heart-behind-manscaped-outdoors/`.
+
+**The worst one was `/privacy-policy/`** — not for SEO, but because that is the URL Jared supplies to **Meta** for the required privacy-policy field on his contact-form ads. A 404 there risks ad rejection.
+
+**Fix:** a new `public_html/.htaccess` (kept in the repo root, committed `0d4be99`) with 301s:
+
+| Old URL | Redirects to |
+|---|---|
+| `/privacy-policy/` | `/privacy-policy.html` |
+| `/services/` | `/services.html` |
+| `/contact-us/` | `/contact.html` |
+| `/request-an-estimate/` | `/contact.html` |
+| `/about-us-the-heart-behind-manscaped-outdoors/` | `/about.html` |
+| `/about-us/` | `/about.html` |
+
+Plus a generic fallback: any single-segment extensionless path with a matching `.html` file 301s to it (so `/about` → `/about.html`), which only fires when the path is not already a real file or directory.
+
+- All verified: each old URL returns **301** and its target returns **200**. Regression-checked afterwards — all 5 pages, CSS/JS/images, `http`→`https`, `www`, and `.well-known/` all still fine, and a genuinely missing path still returns a clean **404** with no redirect loop.
+- ⚠️ **The `.htaccess` carries a loud comment warning against reintroducing the WordPress `RewriteRule . /index.php [L]` block.** That rule is what would break the static site, since `index.php` no longer exists. The commented-out example inside the warning is inert.
+- **Lesson for future cutovers:** check `site:<domain>` in Google *before* removing a CMS, and redirect the indexed URLs as part of the cutover rather than after it.
+
 ## 5. What's next
 - **Hosting handoff to the client (started 2026-07-29/30, staging live 2026-07-30).** Jared wants to own and self-host the site rather than it living long-term on Miguel's personal miguelloza.com/Vercel preview. Jared already has his own hosting stack for the *current* live WordPress site:
   - **SiteGround** — hosting for manscapedoutdoors.com (WordPress + email, `mail.manscapedoutdoors.com` IMAP/SMTP), login at siteground.com, account email `jaredmurray2569@gmail.com`.
