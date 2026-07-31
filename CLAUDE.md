@@ -29,4 +29,6 @@ Also live on the miguelloza.com preview, which since 2026-07-30 is a **Vercel re
 
 **Launch is done.** Jared and Keith approved staging, the cutover shipped 2026-07-30, and the GHL phone system has been test-called and works (Tony first, then Jared's work phone, 15s timeout).
 
-Immediate next steps: (1) resolve the **A2P 10DLC registration**, which shows incomplete/failed in GHL Settings → Phone System → Trust Center and gates their ability to send SMS. (2) Build the parked AI chatbot — reuse the same GHL webhook the contact form already uses, and note assistant-starter's backend moved to Supabase Edge Functions 2026-07-30 (re-check docs/REFERENCE.md §5 before building, the old plan assumed Vercel). (3) Add Jared's Google reviews to the About page. (4) Curate remaining per-service/portfolio imagery from the Drive. See docs/REFERENCE.md for full detail.
+Immediate next steps: (1) Build the parked AI chatbot — reuse the same GHL webhook the contact form already uses, and note assistant-starter's backend moved to Supabase Edge Functions 2026-07-30 (re-check docs/REFERENCE.md §5 before building, the old plan assumed Vercel). (2) Curate remaining per-service/portfolio imagery from the Drive. See docs/REFERENCE.md for full detail.
+
+**Not tracked, at Miguel's direction (2026-07-31) — do not resurface these:** the **A2P 10DLC registration** status in GHL, and whether anyone monitors the **sales@manscapedoutdoors.com** mailbox. Both were noticed and raised; Miguel decided they are not open items. Don't re-flag them on rediscovery.
