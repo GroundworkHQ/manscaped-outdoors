@@ -188,7 +188,12 @@ Plus a generic fallback: any single-segment extensionless path with a matching `
 
 ## 7. Open decisions
 - Final branding direction — current site's logo ("tree of life in a circle") and photography may carry over, but overall design needs a full refresh since current site is considered outdated
-- CRM / AI chatbot / AI call-and-text agent are explicitly deferred to a future phase — do not scope them into this build
+- CRM / AI chatbot / AI call-and-text agent are explicitly deferred to a future phase — do not scope them into this build. (The chatbot has a detailed build plan in §5; "deferred" means not in the current scope, not undesigned.)
+
+### Deliberately NOT tracked — do not resurface (Miguel, 2026-07-31)
+Both were noticed, raised, and closed as non-issues. Rediscovering them is expected; re-flagging them is not.
+- **A2P 10DLC registration status in GHL.**
+- **Whether anyone monitors `sales@manscapedoutdoors.com`.**
 
 ## Brand palette (derived from logo)
 - Olive/sage green (background)
